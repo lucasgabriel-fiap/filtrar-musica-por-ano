@@ -117,7 +117,7 @@ Quando ativado (padrão), o programa cria uma pasta `backup_musicas/` com cópia
 
 ---
 
-## 🔧 Configuração do Spotify (Opcional)
+## 🔧 Configuração do Spotify
 
 O ChronoTune vem com credenciais públicas do Spotify já configuradas. Para usar suas próprias credenciais:
 
