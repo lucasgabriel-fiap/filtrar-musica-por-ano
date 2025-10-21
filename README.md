@@ -153,7 +153,11 @@ Isso é normal se não houver internet. O programa continua funcionando com meta
 
 ## 👨‍💻 Autor
 
+**Lucas Gabriel**
+
 Criado com ❤️ para organizar bibliotecas musicais automaticamente.
+
+[![GitHub](https://img.shields.io/badge/GitHub-lucasgabriel--fiap-181717?style=flat&logo=github)](https://github.com/lucasgabriel-fiap)
 
 ---
 
