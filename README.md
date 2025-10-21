@@ -133,30 +133,6 @@ SPOTIFY_CLIENT_SECRET = "seu_client_secret_aqui"
 
 ---
 
-## ❓ Perguntas Frequentes
-
-### O programa move ou copia os arquivos?
-
-Por padrão, o programa **move** os arquivos (não copia). Mas se o backup estiver ativado, ele cria cópias na pasta `backup_musicas/` antes de mover.
-
-### O que acontece se o ano não for encontrado?
-
-Arquivos sem ano identificado não são movidos e permanecem na pasta original.
-
-### Posso usar sem internet?
-
-Sim! Desative o Spotify com `--no-spotify`. O programa usará apenas metadados locais.
-
-### Como desfazer a organização?
-
-Se você ativou o backup (padrão), todos os arquivos originais estão em `backup_musicas/`. Você pode restaurá-los manualmente de lá.
-
-### O cache fica onde?
-
-O arquivo `music_cache.json` é criado na mesma pasta do script e armazena identificações anteriores.
-
----
-
 ## 🐛 Problemas Comuns
 
 ### "ModuleNotFoundError"
