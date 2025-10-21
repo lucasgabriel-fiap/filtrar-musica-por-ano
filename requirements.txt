@@ -1,0 +1,5 @@
+mutagen>=1.47.0
+spotipy>=2.23.0
+colorama>=0.4.6
+tqdm>=4.66.0
+requests>=2.31.0
