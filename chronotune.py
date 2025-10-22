@@ -3,7 +3,12 @@
 ===============================================================================
                         CHRONOTUNE
                  Organizador Inteligente de Musicas por Ano
-                      Versao 3.0
+                      Versao 3.1
+                      
+    ✓ Escaneia RECURSIVAMENTE todas as subpastas
+    ✓ Organiza arquivos na pasta principal
+    ✓ Identificação inteligente com Spotify
+    ✓ Backup automático e seguro
 ===============================================================================
 """
 
@@ -212,7 +217,7 @@ class EnhancedMusicIdentifier:
                 print(f"{Fore.YELLOW}Erro ao extrair metadados de {file_path.name}: {e}{Style.RESET_ALL}")
         
         # Fallback: extrair do nome do arquivo
-        if not metadata['title'] or not metadata['artist']:
+        if not metadata.get('title') or not metadata.get('artist'):
             filename = file_path.stem
             filename = re.sub(r'\[.*?\]', '', filename)
             filename = re.sub(r'\(.*?(official|video|audio|lyrics|hd|hq|4k|remix|edit).*?\)', '', filename, flags=re.I)
@@ -226,20 +231,20 @@ class EnhancedMusicIdentifier:
             for pattern in patterns:
                 match = re.match(pattern, filename.strip())
                 if match:
-                    metadata['artist'] = metadata['artist'] or match.group(1).strip()
-                    metadata['title'] = metadata['title'] or match.group(2).strip()
+                    metadata['artist'] = metadata.get('artist') or match.group(1).strip()
+                    metadata['title'] = metadata.get('title') or match.group(2).strip()
                     break
             
-            if not metadata['title']:
+            if not metadata.get('title'):
                 metadata['title'] = filename.strip()
         
         # Limpar valores
         for key in metadata:
-            if metadata[key] and isinstance(metadata[key], str):
+            if metadata.get(key) and isinstance(metadata.get(key), str):
                 metadata[key] = re.sub(r'\s+', ' ', metadata[key]).strip()
         
         if self.debug:
-            print(f"{Fore.CYAN}Metadados: {metadata['artist']} - {metadata['title']} ({metadata['year']}){Style.RESET_ALL}")
+            print(f"{Fore.CYAN}Metadados: {metadata.get('artist')} - {metadata.get('title')} ({metadata.get('year')}){Style.RESET_ALL}")
         
         return metadata
     
@@ -414,24 +419,28 @@ class EnhancedMusicIdentifier:
             # Extrair metadados
             metadata = self.extract_metadata(file_path)
             
+            # Garantir que metadata nunca seja None ou vazio
+            if not metadata:
+                metadata = {'title': None, 'artist': None, 'year': None}
+            
             # Prioridade 1: Metadados com ano
-            if metadata['year']:
+            if metadata.get('year'):
                 if self.debug:
-                    print(f"{Fore.GREEN}✓ Ano encontrado nos metadados: {metadata['year']}{Style.RESET_ALL}")
+                    print(f"{Fore.GREEN}✓ Ano encontrado nos metadados: {metadata.get('year')}{Style.RESET_ALL}")
                 
-                result = (metadata['year'], 'metadata', 0.95)
+                result = (metadata.get('year'), 'metadata', 0.95)
                 self.stats['metadata_hits'] += 1
                 self._cache_result(file_hash, result)
                 return result
             
             # Prioridade 2: Spotify
-            if self.spotify_enabled and metadata['title']:
+            if self.spotify_enabled and metadata.get('title'):
                 if self.debug:
                     print(f"{Fore.CYAN}Tentando Spotify...{Style.RESET_ALL}")
                 
-                spotify_year = self.search_spotify(metadata['title'], metadata['artist'])
+                spotify_year = self.search_spotify(metadata.get('title'), metadata.get('artist'))
                 if spotify_year:
-                    confidence = 0.85 if metadata['artist'] else 0.70
+                    confidence = 0.85 if metadata.get('artist') else 0.70
                     result = (spotify_year, 'spotify', confidence)
                     self._cache_result(file_hash, result)
                     return result
@@ -500,8 +509,10 @@ class UltraMusicFilter:
         self._create_directories()
     
     def _create_directories(self):
-        """Cria diretorios para organizacao"""
-        print(f"\n{Fore.CYAN}[INFO] Criando estrutura de pastas...{Style.RESET_ALL}")
+        """Cria diretorios para organizacao na pasta principal"""
+        print(f"\n{Fore.CYAN}[INFO] Criando estrutura de pastas em: {self.root}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[INFO] As pastas de anos serão criadas na pasta principal{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[INFO] Os arquivos de TODAS as subpastas serão organizados aqui{Style.RESET_ALL}")
         
         created_dirs = []
         
@@ -545,12 +556,17 @@ class UltraMusicFilter:
             print(f"{Fore.CYAN}[INFO] Todas as pastas ja existem.{Style.RESET_ALL}")
     
     def scan_files(self) -> List[Path]:
-        """Escaneia arquivos de musica"""
+        """Escaneia arquivos de musica recursivamente em todas as subpastas"""
         files = []
         exclude_dirs = set(str(year) for year in self.target_years)
         exclude_dirs.update({'outros_anos', 'nao_identificadas', BACKUP_DIR, 'antigas', 'fora_2025'})
         
-        print(f"\n{Fore.CYAN}[INFO] Escaneando: {self.root}{Style.RESET_ALL}")
+        print(f"\n{Fore.CYAN}[INFO] Escaneando recursivamente: {self.root}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}[INFO] Procurando arquivos de música em todas as subpastas...{Style.RESET_ALL}")
+        
+        # Contar pastas e subpastas
+        all_dirs = set()
+        scanned_dirs = []
         
         for file_path in self.root.rglob("*"):
             if not file_path.is_file():
@@ -561,14 +577,39 @@ class UltraMusicFilter:
             
             try:
                 relative_parts = file_path.relative_to(self.root).parts
+                
+                # Verificar se o arquivo está em uma pasta excluída
                 if any(part in exclude_dirs for part in relative_parts):
                     if self.debug:
                         print(f"{Fore.YELLOW}Pulando (pasta excluida): {file_path}{Style.RESET_ALL}")
                     continue
+                
+                # Registrar a pasta onde o arquivo foi encontrado
+                if len(relative_parts) > 1:
+                    parent_dir = relative_parts[0]
+                    if parent_dir not in all_dirs:
+                        all_dirs.add(parent_dir)
+                        scanned_dirs.append(parent_dir)
+                
             except:
                 continue
             
             files.append(file_path)
+        
+        # Mostrar informações sobre as pastas escaneadas
+        print(f"\n{Fore.GREEN}[OK] Total de arquivos de música encontrados: {len(files)}{Style.RESET_ALL}")
+        
+        if scanned_dirs:
+            print(f"{Fore.GREEN}[OK] Subpastas escaneadas: {len(scanned_dirs)}{Style.RESET_ALL}")
+            if len(scanned_dirs) <= 10:
+                for dir_name in sorted(scanned_dirs):
+                    print(f"  {Fore.CYAN}→ {dir_name}{Style.RESET_ALL}")
+            else:
+                for dir_name in sorted(scanned_dirs)[:5]:
+                    print(f"  {Fore.CYAN}→ {dir_name}{Style.RESET_ALL}")
+                print(f"  {Fore.YELLOW}... e mais {len(scanned_dirs) - 5} subpastas{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.CYAN}[INFO] Arquivos encontrados na pasta raiz{Style.RESET_ALL}")
         
         return files
     
@@ -614,8 +655,19 @@ class UltraMusicFilter:
                 dest_dir = self.root / "nao_identificadas"
                 dest_name = "pasta nao_identificadas"
             
-            if self.debug:
-                print(f"{Fore.CYAN}Movendo para {dest_name}: {file_path.name}{Style.RESET_ALL}")
+            # Mostrar origem do arquivo se vier de subpasta
+            try:
+                relative_parts = file_path.relative_to(self.root).parts
+                if len(relative_parts) > 1:
+                    origin_folder = relative_parts[0]
+                    if self.debug:
+                        print(f"{Fore.CYAN}[{origin_folder}] → {dest_name}: {file_path.name}{Style.RESET_ALL}")
+                else:
+                    if self.debug:
+                        print(f"{Fore.CYAN}Movendo para {dest_name}: {file_path.name}{Style.RESET_ALL}")
+            except:
+                if self.debug:
+                    print(f"{Fore.CYAN}Movendo para {dest_name}: {file_path.name}{Style.RESET_ALL}")
             
             dest_path = dest_dir / file_path.name
             counter = 1
@@ -638,20 +690,35 @@ class UltraMusicFilter:
             metadata = self.identifier.extract_metadata(file_path)
             
             self.stats['processed'] += 1
-            if year in self.target_years:
+            if year and year in self.target_years:
                 self.stats['by_year'][year] += 1
             elif year:
                 self.stats['other_years'] += 1
             else:
                 self.stats['unknown'] += 1
             
+            # Garantir que metadata nunca seja None
+            if not metadata:
+                metadata = {}
+            
+            # Extrair título e artista com segurança
+            title = metadata.get('title') if metadata else None
+            if not title:
+                title = file_path.stem
+            title = str(title)[:35]
+            
+            artist = metadata.get('artist') if metadata else None
+            if not artist:
+                artist = 'Unknown'
+            artist = str(artist)[:25]
+            
             return {
                 'path': file_path,
                 'year': year,
                 'source': source,
                 'confidence': confidence,
-                'title': metadata.get('title', file_path.stem)[:35],
-                'artist': metadata.get('artist', 'Unknown')[:25],
+                'title': title,
+                'artist': artist,
                 'success': True
             }
         
