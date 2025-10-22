@@ -6,6 +6,10 @@ ChronoTune é uma ferramenta Python que organiza automaticamente sua biblioteca 
 
 ---
 
+## 🎥 Demonstração
+
+[![Assista no YouTube](https://img.shields.io/badge/▶️_Assista_no_YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=1-PtkHM5YI4)
+
 ## ✨ Funcionalidades
 
 - 🎯 **Identificação Inteligente**: Usa metadados dos arquivos + API do Spotify para máxima precisão
