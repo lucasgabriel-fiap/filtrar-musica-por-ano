@@ -1,4 +1,4 @@
-# 🎵 ChronoTune
+# ChronoTune
 
 **Organizador Inteligente de Músicas por Ano**
 
@@ -6,39 +6,37 @@ ChronoTune é uma ferramenta Python que organiza automaticamente sua biblioteca 
 
 ---
 
-## 🎥 Demonstração
+## Demonstração
 
 [![Assista no YouTube](https://img.shields.io/badge/▶️_Assista_no_YouTube-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/watch?v=1-PtkHM5YI4)
 
-## ✨ Funcionalidades
+## Funcionalidades
 
-- 🎯 **Identificação Inteligente**: Usa metadados dos arquivos + API do Spotify para máxima precisão
-- 📁 **Organização Automática**: Move músicas para pastas organizadas por ano
-- 💾 **Backup Automático**: Cria cópias de segurança antes de mover arquivos
-- 🗂️ **Cache Inteligente**: Memoriza identificações para não buscar a mesma música duas vezes
-- 🎨 **Interface Visual**: Menu interativo com cores e barra de progresso
-- 🎼 **Suporte Multi-formato**: MP3, M4A, MP4, FLAC, WAV, OGG, OPUS, WMA, AAC
+- **Identificação Inteligente**: Usa metadados dos arquivos + API do Spotify para máxima precisão
+- **Organização Automática**: Move músicas para pastas organizadas por ano
+- **Backup Automático**: Cria cópias de segurança antes de mover arquivos
+- **Cache Inteligente**: Memoriza identificações para não buscar a mesma música duas vezes
+- **Interface Visual**: Menu interativo com cores e barra de progresso
+- **Suporte Multi-formato**: MP3, M4A, MP4, FLAC, WAV, OGG, OPUS, WMA, AAC
 
 ---
 
-## 📋 Requisitos
+## Requisitos
 
-- **Python 3.7+**
+- Python 3.7+
 - Sistema operacional: Windows, Linux ou macOS
 
 ---
 
-## 🚀 Instalação
+## Instalação
 
 ### 1. Clone o repositório
-
 ```bash
 git clone https://github.com/seu-usuario/chronotune.git
 cd chronotune
 ```
 
 ### 2. Instale as dependências
-
 ```bash
 pip install -r requirements.txt
 ```
@@ -52,26 +50,24 @@ pip install -r requirements.txt
 
 ---
 
-## 💡 Como Usar
+## Como Usar
 
 ### Modo Interativo (Recomendado)
 
 Execute o programa sem argumentos para usar o menu interativo:
-
 ```bash
 python chronotube.py
 ```
 
 O programa vai te guiar através de:
-1. **Seleção da pasta** com suas músicas
-2. **Escolha dos anos** que deseja filtrar
-3. **Opções de backup** e uso do Spotify
-4. **Confirmação** antes de executar
+1. Seleção da pasta com suas músicas
+2. Escolha dos anos que deseja filtrar
+3. Opções de backup e uso do Spotify
+4. Confirmação antes de executar
 
 ### Modo Linha de Comando
 
 Para uso rápido sem interação:
-
 ```bash
 # Usar pasta atual e anos 2024-2025
 python chronotube.py . --years 2024,2025
@@ -88,12 +84,11 @@ python chronotube.py --clear-cache
 
 ---
 
-## 📂 Como Funciona
+## Como Funciona
 
 ### Estrutura de Organização
 
 O ChronoTune organiza suas músicas criando pastas por ano:
-
 ```
 Sua Pasta de Músicas/
 ├── 2020/
@@ -121,7 +116,7 @@ Quando ativado (padrão), o programa cria uma pasta `backup_musicas/` com cópia
 
 ---
 
-## 🔧 Configuração do Spotify
+## Configuração do Spotify
 
 O ChronoTune vem com credenciais públicas do Spotify já configuradas. Para usar suas próprias credenciais:
 
@@ -129,7 +124,6 @@ O ChronoTune vem com credenciais públicas do Spotify já configuradas. Para usa
 2. Crie um novo aplicativo
 3. Copie o **Client ID** e **Client Secret**
 4. Edite o arquivo `chronotube.py`:
-
 ```python
 SPOTIFY_CLIENT_ID = "seu_client_id_aqui"
 SPOTIFY_CLIENT_SECRET = "seu_client_secret_aqui"
@@ -137,7 +131,7 @@ SPOTIFY_CLIENT_SECRET = "seu_client_secret_aqui"
 
 ---
 
-## 🐛 Problemas Comuns
+## Problemas Comuns
 
 ### "ModuleNotFoundError"
 
@@ -155,12 +149,12 @@ Isso é normal se não houver internet. O programa continua funcionando com meta
 
 ---
 
-## 👨‍💻 Autor
+## Autor
 
 [![GitHub](https://img.shields.io/badge/GitHub-lucasgabriel--fiap-181717?style=flat&logo=github)](https://github.com/lucasgabriel-fiap)
 
 ---
 
-## 🌟 Dê uma estrela!
+## Licença
 
-Se este projeto foi útil para você, considere dar uma ⭐ no repositório!
+Este projeto está sob a licença MIT.
